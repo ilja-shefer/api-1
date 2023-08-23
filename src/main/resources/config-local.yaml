@@ -1,0 +1,18 @@
+ftp:
+  workingDir: /
+  host: test
+  port: test
+  username: test
+  password: test
+
+api-2:
+  host: "localhost"
+  port: "8081"
+  protocol: "HTTP"
+  basePath: "/api/"
+  timeout: "30000"
+
+environment.id: local
+domain: local
+cloudhub.notifications.user: test
+cloudhub.notifications.password: test

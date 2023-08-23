@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub"
+	xmlns:api-2="http://www.mulesoft.org/schema/mule/api-2" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-2 http://www.mulesoft.org/schema/mule/api-2/current/mule-api-2.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+	<ftp:config name="FTP_Config" doc:name="FTP Config" doc:id="60c5086f-556b-4914-b787-bd11ad9183c3" >
+		<ftp:connection workingDir="${ftp.workingDir}" host="${ftp.host}" username="${ftp.username}" password="${ftp.password}" port="${ftp.port}"/>
+	</ftp:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a53db432-d0bd-445d-a67c-c4faf42c4f0d" file="config-local.yaml" />
+	<api-2:config name="Api_2_Config" doc:name="Api-2 Config" doc:id="783c27bb-912f-4cea-98f8-ce878ce7e8db" property_host="${api-2.host}" property_port="${api-2.port}" property_protocol="${api-2.protocol}" property_basePath="${api-2.basePath}" property_responseTimeout="${api-2.timeout}"/>
+	<cloudhub:config name="CloudHub_Config" doc:name="CloudHub Config" doc:id="9501b7d6-2bc6-4228-880e-54aa0855f7dd" >
+		<cloudhub:connection username="${cloudhub.notifications.user}" password="${cloudhub.notifications.password}" environment="${environment.id}" />
+	</cloudhub:config>	
+
+</mule>

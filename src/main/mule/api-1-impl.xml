@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub"
+	xmlns:api-2="http://www.mulesoft.org/schema/mule/api-2"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-2 http://www.mulesoft.org/schema/mule/api-2/current/mule-api-2.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+
+	<flow name="api-1-implFlow"
+		doc:id="f862e7e5-e87d-4109-b6bd-0f2f0cffb6eb">
+		<ftp:listener doc:name="On New or Updated File"
+			doc:id="a668bb76-9e77-42f5-a440-e6910263c4b3" config-ref="FTP_Config"
+			directory="/start"
+			moveToDirectory='#[if(isEmpty(error))"/done"else"/error"]'>
+			<scheduling-strategy>
+				<fixed-frequency />
+			</scheduling-strategy>
+		</ftp:listener>
+		<set-variable value="#[attributes.name]"
+			doc:name="Copy_of_name of incomming file"
+			doc:id="5d7f6884-2b7b-45f8-b147-0a14a15558df"
+			variableName="name_of_incomming_file" />
+		<logger level="INFO" doc:name="status of loading from ftp server" doc:id="0fc4501a-39cf-4367-9773-25f40ae2c5c3" message='#["File: " ++ vars.name_of_incomming_file ++ " has been downloaded successfully from ftp server to implementation flow"]'/>
+		<ee:transform doc:name="Input to Comming Data Model" doc:id="d41631d1-2ef9-4840-8eef-35fba5eeffaa" >
+			<ee:message >
+				<ee:set-payload resource="trasnformInputToCommingDataModel.dwl" />
+			</ee:message>
+		</ee:transform>
+		<api-2:create-postrequest doc:name="Create postrequest" doc:id="32200778-5c90-486b-96f1-22c16ef00795" config-ref="Api_2_Config" filename="#[vars.name_of_incomming_file]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9721e61c-8b72-41c0-a70e-c601380ea081" type="ANY">
+				<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"errorType": error.errorType.asString&#10;}]' doc:name="error type" doc:id="66d25f58-ddf4-4962-a1ad-b8797f3fcfa5" />
+				<logger level="ERROR" doc:name="Logger" doc:id="0b637a69-4cf0-4676-8b0f-2150a61fd27e" message='Error occurred while processing the API request' />
+				<cloudhub:create-notification doc:name="Create Notification" doc:id="2a98a85e-e2b6-4891-a3e5-c6cf1de4e179" config-ref="CloudHub_Config" domain="${domain}">
+					<cloudhub:message ><![CDATA[Error occurred while processing the API request]]></cloudhub:message>
+				</cloudhub:create-notification>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	
+</mule>

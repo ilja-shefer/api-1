@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ftpserver="http://www.mulesoft.org/schema/mule/ftpserver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ftpserver http://www.mulesoft.org/schema/mule/ftpserver/current/mule-ftpserver.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="new-test-suite.xml" >
+		<munit:parameterizations file="error-list.yaml" />
+
+	</munit:config>
+	<munit:test name="api-1-impl-test-suite-api-1-imlFlowTest" doc:id="d99fe834-5a87-44e6-b0e5-ee9b650833c3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when request from ftp server" doc:id="d39a701d-d951-4056-be01-6696af8d36e3" processor="ftp:listener">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a668bb76-9e77-42f5-a440-e6910263c4b3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy of transform message" doc:id="36a5eb64-6fb3-4318-acb3-72634fd9e957" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d41631d1-2ef9-4840-8eef-35fba5eeffaa" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<set-payload value="#[payload]" doc:name="payload before transform message" doc:id="7c063e41-b1cf-40c0-8d5f-837b7cf53cb6" />
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<set-variable value='#[%dw 2.0&#10;output application/json&#10;---&#10;readUrl("classpath://testPayloadAfterTransformMessage.json", "application/json")]' doc:name="payload after transform message" doc:id="51cf4bce-5d15-4ef9-b82a-2268261fa8ca" variableName="payload_after_transform_message" />
+					<munit-tools:assert-that doc:name="Assert" doc:id="a04ae434-6a2d-4cbb-bbd0-afdcfc5969b3" is="#[MunitTools::equalTo(vars.payload_after_transform_message)]" expression="#[payload]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:mock-when doc:name="Mock when post request to api-2" doc:id="c34e948f-3363-4c57-88a6-7599fe8b4055" processor="api-2:create-postrequest">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="32200778-5c90-486b-96f1-22c16ef00795" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set payload and attributes name" doc:id="08410b5b-aede-47f1-9d23-5b868a445f04">
+				<munit:payload value='#[{&#10;	"Mandant": "100",&#10;	"Kundennummer": "001",&#10;	"AngelegtAm": "2020-03-26T13:42:53Z",&#10;	"GeaendertAm": "2020-03-26T13:42:53Z",&#10;	"Anrede": "Herr",&#10;	"Name1": "Max Mustermann",&#10;	"Betriebsstaette": "HQ",&#10;	"VANummer": "DE1234567890",&#10;	"Fachrichtung": "IT",&#10;	"Straße": "Hüttenstrasse 50",&#10;	"Land": "Deutschland",&#10;	"Postleitzahl": "45527",&#10;	"Ort": "Hattingen",&#10;	"DSStatus": 1,&#10;	"FachrichtungLOV": "Beratung",&#10;	"LANummer": "laNummer",&#10;	"InstTyp": "instTyp",&#10;	"InstName": "instName",&#10;	"MaveName": "maveName",&#10;	"GeborenAm": "2005-05-17",&#10;	"PatientStatus": "aktiv",&#10;	"Zuzahlungsbefreiung": "nein",&#10;	"Patientenerklaerung": "nein",&#10;	"Pflegestufe": "1",&#10;	"Status": 0,&#10;	"IstVerstorben": false,&#10;	"IstKunde": true,&#10;	"IstVerordner": false,&#10;	"Hauptvermittler": "F/S"&#10;}]' />
+				<munit:attributes value='#[{"name" :"test-name.json"}]' />
+			</munit:set-event>
+			<set-variable value="#[output application/json --- {}]" doc:name="mock of post request" doc:id="63a6f9df-e8e3-4cc8-b731-7c16e66da23e" variableName="responseOfPostRequest"/>
+			<flow-ref doc:name="Flow-ref to api-1-implFlow" doc:id="51371a1b-6b0a-473b-81b8-5a4c3a5f90c0" name="api-1-implFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="06d045bf-945d-41fc-b172-2f78890c42ce" is="#[MunitTools::equalTo(vars.responseOfPostRequest)]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="error-handler-api-1-implFlow-test" doc:id="56cfdb09-0ac9-4fab-9f4b-9e6c8aa7378f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when error of post request" doc:id="a4512d2b-66fa-4b52-82f5-cb2f35917231" processor="api-2:create-postrequest">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="32200778-5c90-486b-96f1-22c16ef00795" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="${errorType}" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Create notification, do nothing" doc:id="b3cb2ed3-403f-4e52-a07d-28cd3d5824b6" processor="cloudhub:create-notification">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="2a98a85e-e2b6-4891-a3e5-c6cf1de4e179" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set payload and attributes name" doc:id="95c64483-0059-4114-baef-51950fd3d256" >
+				<munit:payload value='#[{
+	"Mandant": "100",
+	"Kundennummer": "001",
+	"AngelegtAm": "2020-03-26T13:42:53Z",
+	"GeaendertAm": "2020-03-26T13:42:53Z",
+	"Anrede": "Herr",
+	"Name1": "Max Mustermann",
+	"Betriebsstaette": "HQ",
+	"VANummer": "DE1234567890",
+	"Fachrichtung": "IT",
+	"Straße": "Hüttenstrasse 50",
+	"Land": "Deutschland",
+	"Postleitzahl": "45527",
+	"Ort": "Hattingen",
+	"DSStatus": 1,
+	"FachrichtungLOV": "Beratung",
+	"LANummer": "laNummer",
+	"InstTyp": "instTyp",
+	"InstName": "instName",
+	"MaveName": "maveName",
+	"GeborenAm": "2005-05-17",
+	"PatientStatus": "aktiv",
+	"Zuzahlungsbefreiung": "nein",
+	"Patientenerklaerung": "nein",
+	"Pflegestufe": "1",
+	"Status": 0,
+	"IstVerstorben": false,
+	"IstKunde": true,
+	"IstVerordner": false,
+	"Hauptvermittler": "F/S"
+}]' />
+				<munit:attributes value='#[{"name" :"test-name.json"}]' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="afe67ffc-4451-42a7-99ef-78a616156795">
+				<flow-ref doc:name="Flow-ref to api-1-implFlow" doc:id="2fd0e7c7-c169-4bf6-9f38-9c3142df91ed" name="api-1-implFlow" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ee24d474-112b-4ed1-a16c-8a7c6ee4173c" type="${errorType}" />
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3033283f-ee13-4ceb-a9ed-ce9cc35cf534" actual="#[payload]" expected='#[{&#10;	"errorType": "${errorType}"&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
