@@ -13,7 +13,7 @@ fun formatBoolean(value: String): Boolean =
     "Anrede": payload.Anrede,
     "AngelegtAm": payload.AngelegtAm,
     "GeaendertAm": payload.GeaendertAm,
-    "Straße": payload["Straße"],
+    "Strasse": payload["Straße"],
     "Postleitzahl": payload.Postleitzahl,
     "Ort": payload.Ort,
     "Land": payload.Land,

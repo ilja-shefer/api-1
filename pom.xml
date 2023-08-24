@@ -30,6 +30,9 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<configuration>
+					<classifier>mule-application</classifier>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.mulesoft.munit.tools</groupId>
@@ -114,15 +117,15 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>64b18718-47f1-416d-a3ef-9088abe5d240</groupId>
-			<artifactId>mule-plugin-api-2</artifactId>
-			<version>1.0.6</version>
-			<classifier>mule-plugin</classifier>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-vm-connector</artifactId>
 			<version>2.0.0</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>64b18718-47f1-416d-a3ef-9088abe5d240</groupId>
+			<artifactId>mule-plugin-api-2</artifactId>
+			<version>1.0.7</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
